@@ -58,6 +58,8 @@ RUN echo "Installing Project Zomboid (stable) anonymously during build..."; \
     "${STEAMCMDDIR}/steamcmd.sh" \
     +force_install_dir "${PZ_DIR}" \
     +login anonymous \
+    +app_info_update 1 \
+    +app_update 380870 \
     +app_update 380870 validate \
     +quit
 
