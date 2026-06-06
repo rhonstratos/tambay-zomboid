@@ -1,7 +1,7 @@
 name: Deploy to DockerHub
 
 on:
-  merge_group:
+  push:
     branches: ["main"]
 
 jobs:
