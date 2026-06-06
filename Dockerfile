@@ -22,6 +22,7 @@ ENV LC_ALL=${LC_ALL}
 
 # Runtime configuration — passed via --env-file at container start, not baked in
 ENV SERVER_NAME=tambay_server
+ENV ZOMBOID_DIR=/home/${PZ_USER}/Zomboid
 
 # Install dependencies, locale, and create unprivileged user in a single layer
 RUN dpkg --add-architecture i386 && \
@@ -38,9 +39,11 @@ RUN dpkg --add-architecture i386 && \
     screen \
     tzdata \
     net-tools \
-    iproute2 && \
+    iproute2 \
+    sudo && \
     locale-gen en_US.UTF-8 && \
     useradd -m -d /home/${PZ_USER} -s /bin/bash ${PZ_USER} && \
+    echo "${PZ_USER} ALL=(ALL) NOPASSWD: /bin/mkdir, /bin/chown" >> /etc/sudoers && \
     mkdir -p "${PZ_DIR}" "${STEAMCMDDIR}" && \
     chown -R ${PZ_USER}:${PZ_USER} "${PZ_DIR}" "${STEAMCMDDIR}" && \
     rm -rf /var/lib/apt/lists/*
@@ -88,4 +91,4 @@ EXPOSE 8766/udp 16261/udp 16262/udp
 VOLUME ["/home/pzuser/Zomboid", "/pzserver"]
 
 # Wrapper entrypoint: will install/update the server if needed, then start it
-CMD ["/home/pzuser/entrypoint.sh"]
+CMD /home/${PZ_USER}/entrypoint.sh
