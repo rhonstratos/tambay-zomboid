@@ -12,7 +12,6 @@ ARG LANG=en_US.UTF-8
 ARG LC_ALL=en_US.UTF-8
 
 # Persist args as env vars so they're available to all instructions and runtime
-#!!! Change this IMMEDIATELY
 ENV PZ_USER=${PZ_USER}
 ENV PZ_DIR=${PZ_DIR}
 ENV STEAMCMDDIR=${STEAMCMDDIR}
@@ -21,11 +20,8 @@ ENV TZ=${TZ}
 ENV LANG=${LANG}
 ENV LC_ALL=${LC_ALL}
 
-# Runtime configuration (passed from .env or --env-file at container start)
+# Runtime configuration — passed via --env-file at container start, not baked in
 ENV SERVER_NAME=tambay_server
-ENV ADMIN_PASSWORD=tambay_password
-ENV STEAM_USER=umaru123123
-ENV STEAM_PASSWORD=zomboid123
 
 # Install dependencies, locale, and create unprivileged user in a single layer
 RUN dpkg --add-architecture i386 && \
@@ -55,11 +51,12 @@ FROM base AS steamcmd
 USER ${PZ_USER}
 WORKDIR /home/${PZ_USER}
 
-# Install SteamCMD
+# Install SteamCMD and self-update so the next stage doesn't restart mid-command
 RUN cd "${STEAMCMDDIR}" && \
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
-    rm steamcmd_linux.tar.gz
+    rm steamcmd_linux.tar.gz && \
+    ./steamcmd.sh +quit
 
 
 FROM steamcmd AS pzserver
@@ -71,6 +68,7 @@ RUN echo "Installing Project Zomboid (stable) anonymously during build..."; \
     "${STEAMCMDDIR}/steamcmd.sh" \
     +force_install_dir "${PZ_DIR}" \
     +login anonymous \
+    +app_license_request 380870 \
     +app_update 380870 validate \
     +quit
 
