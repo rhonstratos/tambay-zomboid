@@ -43,7 +43,7 @@ RUN dpkg --add-architecture i386 && \
     sudo && \
     locale-gen en_US.UTF-8 && \
     useradd -m -d /home/${PZ_USER} -s /bin/bash ${PZ_USER} && \
-    echo "${PZ_USER} ALL=(ALL) NOPASSWD: /bin/mkdir, /bin/chown" >> /etc/sudoers && \
+    echo "${PZ_USER} ALL=(ALL) NOPASSWD: /usr/bin/mkdir, /usr/bin/chown" >> /etc/sudoers && \
     mkdir -p "${PZ_DIR}" "${STEAMCMDDIR}" && \
     chown -R ${PZ_USER}:${PZ_USER} "${PZ_DIR}" "${STEAMCMDDIR}" && \
     rm -rf /var/lib/apt/lists/*
@@ -86,9 +86,6 @@ WORKDIR ${PZ_DIR}
 
 # Default ports; Tailscale will expose the container's network
 EXPOSE 8766/udp 16261/udp 16262/udp
-
-# Persist server data and install dir
-VOLUME ["/home/pzuser/Zomboid", "/pzserver"]
 
 # Wrapper entrypoint: will install/update the server if needed, then start it
 CMD /home/${PZ_USER}/entrypoint.sh
