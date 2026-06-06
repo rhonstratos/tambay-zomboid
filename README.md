@@ -64,10 +64,11 @@ All runtime settings are configured via `.env`:
 |---|---|---|
 | `SERVER_NAME` | `tambay_server` | In-game server name |
 | `ADMIN_PASSWORD` | — | Admin password for server console |
-| `ZOMBOID_DIR` | `/home/pzuser/Zomboid` | Data directory (Server configs, db, backups, mods) |
+| `ZOMBOID_DIR` | `./Zomboid` | Host path for persistent data (used by `compose.yml`) |
 | `PZ_USER` | `pzuser` | Container unprivileged user |
 | `STEAM_USER` | *(empty)* | Steam username for unstable beta access |
 | `STEAM_PASSWORD` | *(empty)* | Steam password for unstable beta access |
+| `FORCE_UPDATE` | *(unset)* | Set to `true` to force SteamCMD update on next start |
 | `TZ` | `Asia/Manila` | Container timezone |
 | `LANG` / `LC_ALL` | `en_US.UTF-8` | Locale |
 
