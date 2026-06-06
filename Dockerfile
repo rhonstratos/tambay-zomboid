@@ -1,16 +1,31 @@
-FROM debian:bookworm-slim as base
+FROM debian:bookworm-slim AS base
 
 LABEL maintainer="Vreiln"
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    TZ=Asia/Manila \
-    PZ_DIR=/pzserver \
-    STEAMCMDDIR=/steamcmd \
-    PZ_USER=pzuser \
-    LANG=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8 \
-    SERVER_NAME=tambay_server \
-    ADMIN_PASSWORD=tambay_password
+# Build arguments (configurable via --build-arg, defaults from .env values)
+ARG PZ_USER=pzuser
+ARG PZ_DIR=/pzserver
+ARG STEAMCMDDIR=/steamcmd
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Asia/Manila
+ARG LANG=en_US.UTF-8
+ARG LC_ALL=en_US.UTF-8
+
+# Persist args as env vars so they're available to all instructions and runtime
+#!!! Change this IMMEDIATELY
+ENV PZ_USER=${PZ_USER}
+ENV PZ_DIR=${PZ_DIR}
+ENV STEAMCMDDIR=${STEAMCMDDIR}
+ENV DEBIAN_FRONTEND=${DEBIAN_FRONTEND}
+ENV TZ=${TZ}
+ENV LANG=${LANG}
+ENV LC_ALL=${LC_ALL}
+
+# Runtime configuration (passed from .env or --env-file at container start)
+ENV SERVER_NAME=tambay_server
+ENV ADMIN_PASSWORD=tambay_password
+ENV STEAM_USER=umaru123123
+ENV STEAM_PASSWORD=zomboid123
 
 # Install dependencies, locale, and create unprivileged user in a single layer
 RUN dpkg --add-architecture i386 && \
@@ -35,7 +50,7 @@ RUN dpkg --add-architecture i386 && \
     rm -rf /var/lib/apt/lists/*
 
 
-FROM base as steamcmd
+FROM base AS steamcmd
 
 USER ${PZ_USER}
 WORKDIR /home/${PZ_USER}
@@ -45,15 +60,13 @@ RUN cd "${STEAMCMDDIR}" && \
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
     rm steamcmd_linux.tar.gz
-    
 
-FROM steamcmd as pzserver
+
+FROM steamcmd AS pzserver
 
 # Install / update Project Zomboid dedicated server (appid 380870)
 # If STEAM_USER/STEAM_PASSWORD are provided at build time, try to install the unstable beta.
 # If not, install the stable branch anonymously. Any SteamCMD failure is logged but does not fail the build.
-ARG STEAM_USER
-ARG STEAM_PASSWORD
 RUN echo "Installing Project Zomboid (stable) anonymously during build..."; \
     "${STEAMCMDDIR}/steamcmd.sh" \
     +force_install_dir "${PZ_DIR}" \
