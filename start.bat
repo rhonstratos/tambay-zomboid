@@ -14,5 +14,6 @@ docker run -d --name pz1 ^
   -p 16262:16262/udp ^
   -v "%CD%\Zomboid:/home/pzuser/Zomboid" ^
   -e STEAM_USER=%STEAM_USER% ^
+  -e STEAM_USER=%STEAM_USER% ^
   -e STEAM_PASSWORD=%STEAM_PASSWORD% ^
   pz-server-unstable

@@ -4,3 +4,6 @@ Zomboid/db/*
 Zomboid/Logs/*
 Zomboid/messaging/*
 Zomboid/Recording/*
+
+.env
+!.env.*

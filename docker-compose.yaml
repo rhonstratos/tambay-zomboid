@@ -1,0 +1,40 @@
+name: zomboid_server
+
+services:
+  main_app:
+    cpu_shares: 90
+    command: []
+    deploy:
+      resources:
+        limits:
+          memory: 8192M
+    env_file: .env
+    image: rhonstratos/tambay_zomboid:latest
+    labels:
+      icon: https://cdn2.steamgriddb.com/icon_thumb/30999ce1f0a35aeff9a456e4487f9924.png
+    restart: on-failure
+    ports:
+      - "8766:8766/udp"
+      - "16261:16261/udp"
+      - "16262:16262/udp"
+    volumes:
+      - ${ZOMBOID_DIR:-./Zomboid}:/home/pzuser/Zomboid
+    devices: []
+    cap_add: []
+    network_mode: host
+    privileged: false
+    container_name: ""
+    hostname: ""
+
+x-casaos:
+  author: self
+  category: self
+  hostname: ""
+  icon: https://cdn2.steamgriddb.com/icon_thumb/30999ce1f0a35aeff9a456e4487f9924.png
+  index: ""
+  is_uncontrolled: true
+  port_map: ""
+  scheme: http
+  store_app_id: zomboid_server
+  title:
+    custom: Zomboid Build 42 Server
